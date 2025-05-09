@@ -35,11 +35,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.falconteam.laboratorio3.models.Card
 import com.falconteam.laboratorio3.navigation.AppNavigation
 import com.falconteam.laboratorio3.ui.components.Cards
 import com.falconteam.laboratorio3.ui.theme.Laboratorio3Theme
+import com.falconteam.laboratorio3.viewmodel.GeneralViewModel
 import java.util.Date
 
 class MainActivity : ComponentActivity() {
@@ -49,8 +51,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             Laboratorio3Theme {
                 val navController = rememberNavController()
-                val lista = remember { mutableStateListOf<Card>() }
-                AppNavigation(navController = navController, lista = lista)
+                AppNavigation(navController = navController)
             }
         }
     }
