@@ -24,6 +24,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,10 +49,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             Labo6Theme {
                 val viewModel: BookViewModel = viewModel()
-                val booksProvided by viewModel.books.collectAsState()
+                val books by viewModel.books.collectAsState()
+                val isLoading by viewModel.isLoading.collectAsState()
                 val snackbarHostState = remember { SnackbarHostState() }
                 val scope = rememberCoroutineScope()
-                var isloading by remember { mutableStateOf(false) }
+
                 Scaffold(
                     snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
                 ) { paddingValues ->
@@ -62,50 +64,42 @@ class MainActivity : ComponentActivity() {
                             .padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Button(onClick = {
-                            viewModel.loadBooks()
-                            scope.launch {
-                                snackbarHostState.showSnackbar("Cargando libros...")
-                            }
-                            isloading = true
-                        },
+                        Button(
+                            onClick = {
+                                viewModel.loadBooks()
+                                scope.launch {
+                                    snackbarHostState.showSnackbar("Cargando libros...")
+                                }
+                            },
                             modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00668c)),
-                            ) {
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00668c))
+                        ) {
                             Text("Get Data")
                         }
 
+
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        if (isloading) {
+                        if (isLoading) {
                             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                 CircularProgressIndicator()
                             }
-                        }
-
-
-
-                            booksProvided?.let {
-                                isloading = false
-                                scope.launch {
-                                    snackbarHostState.showSnackbar("Datos cargados correctamente")
-                                }
+                        } else {
+                            books?.let {
                                 LazyColumn {
                                     items(it) { book ->
                                         BookCard(book = book)
                                     }
                                 }
                             } ?: Text("Sin datos que mostrar", modifier = Modifier.fillMaxWidth())
-
-
-
+                        }
 
                     }
                 }
-
-                }
             }
         }
+
+    }
     }
 
 
